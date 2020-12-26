@@ -1,13 +1,12 @@
 Feature: Testing a REST API
-  Users should be able to submit GET and POST requests to a web service, 
-  represented by WireMock
+  Users should be able to perform CRUD operation.
 
   Scenario: Book Upload
-    When users upload a book data
-    Then the server should handle it and return a success status
+    When user upload book data
+    Then the book is added
     
   Scenario: Book retrieval
-    When users want to get information about all the books
+    When to get information about all the books
     Then return all the books data
     
    Scenario: Book Deletion
@@ -16,4 +15,4 @@ Feature: Testing a REST API
     
    Scenario: Book Update
     When users what to update a book
-    Then the server should handle it and return a success status
+    Then the service should handle it and return the updated book

@@ -1,6 +1,6 @@
 package com.cucumber.apitesting;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -16,33 +16,35 @@ import io.restassured.specification.RequestSpecification;
 public class StepDefination{
 
 	private static final String BASE_URL = "http://localhost:8080";
+	private static final String BOOK_URL = "/book";
+	private static final String BOOK_WITH_DUMMY_ID = "/book/983";
+	public static final String APPLICATION_JSON = "application/json";
+	public static final String CONTENT_TYPE = "Content-Type";
 
 	private final InputStream jsonInputStream = this.getClass().getClassLoader().getResourceAsStream("cucumber.json");
     private final String requestString = new Scanner(jsonInputStream, "UTF-8").useDelimiter("\\Z").next();
 	
 	private static Response response;
-	private static String jsonString;
 
 
-	@When("^users want to get information about all the books$")
+	@When("^to get information about all the books$")
 	public void usersGetInformationOfAllBook() {
 		RestAssured.baseURI = BASE_URL;
-		RequestSpecification request = RestAssured.given().accept("application/json");
-		response = request.get("/book");
+		RequestSpecification request = RestAssured.given().accept(APPLICATION_JSON);
+		response = request.get(BOOK_URL);
 
-		jsonString = response.asString();
-		assertTrue(!jsonString.isEmpty());
+		assertNotNull(response.asString());
 	}
 
-	@When("users upload a book data")
+	@When("user upload book data")
 	public void addBookInList() {
 		RestAssured.baseURI = BASE_URL;
 		RequestSpecification request = RestAssured.given();
 		request
-		.header("Content-Type", "application/json")
+		.header(CONTENT_TYPE, APPLICATION_JSON)
 		.body(requestString);
 		
-		response = request.post("/book");
+		response = request.post(BOOK_URL);
 		Assert.assertEquals(200, response.getStatusCode());
 	}
 
@@ -52,8 +54,8 @@ public class StepDefination{
 		RequestSpecification request = RestAssured.given();
 
 		request
-		.header("Content-Type", "application/json");
-		response = request.delete("/book/983");
+		.header(CONTENT_TYPE, APPLICATION_JSON);
+		response = request.delete(BOOK_WITH_DUMMY_ID);
 	}
 	
 	@When("users what to update a book")
@@ -62,22 +64,15 @@ public class StepDefination{
 		RequestSpecification request = RestAssured.given();
 
 		request
-		.header("Content-Type", "application/json")
+		.header(CONTENT_TYPE, APPLICATION_JSON)
 		.body(requestString);
 		
-		response = request.put("/book");
+		response = request.put(BOOK_URL);
 		Assert.assertEquals(200, response.getStatusCode());
 	}
 	
-	@Then("The book is added")
+	@Then("the book is added")
 	public void bookIsAdded() {
-		RestAssured.baseURI = BASE_URL;
-		RequestSpecification request = RestAssured.given();
-
-		request
-		.header("Content-Type", "application/json");
-
-		response = request.get("/book/983");
 		Assert.assertEquals(200, response.getStatusCode());
 	}
 
@@ -88,14 +83,14 @@ public class StepDefination{
 		RequestSpecification request = RestAssured.given();
 
 		request
-		.header("Content-Type", "application/json");
+		.header(CONTENT_TYPE, APPLICATION_JSON);
 
-		response = request.get("/book/983");
+		response = request.get(BOOK_WITH_DUMMY_ID);
 		//Book with Id 983 is deleted so status is 400
 		Assert.assertEquals(400, response.getStatusCode());
 	}
 	
-	@Then("^the server should handle it and return a success status$")
+	@Then("^the service should handle it and return the updated book$")
     public void theServerShouldReturnASuccessStatus() {
     }
 	@Then("return all the books data")
